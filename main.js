@@ -102,13 +102,43 @@ const products = [
     },
 ];
 
+const MOBILE_PRODUCT_COUNT = 4;
+const DESKTOP_PRODUCT_COUNT = 10;
+const isMobile = window.matchMedia("(max-width: 768px)");
+let endProductIndex = isMobile.matches ? MOBILE_PRODUCT_COUNT : DESKTOP_PRODUCT_COUNT;
+
 document.addEventListener('DOMContentLoaded', () => {
-    renderProducts();
+    renderProducts(endProductIndex);
+    createCustomScrollbar();
+    const showMoreBtn = document.getElementById("showMoreBtn");
+
+    if (showMoreBtn) {
+        showMoreBtn.addEventListener('click', () => {
+            endProductIndex = DESKTOP_PRODUCT_COUNT;
+            showMoreBtn.style.display = "none"
+            renderProducts(endProductIndex);
+        });
+    }
 });
 
-const renderProducts = () => {
+isMobile.addEventListener("change", (e) => {
+    const showMoreBtn = document.getElementById("showMoreBtn");
+    if (!showMoreBtn) {
+        return
+    }
+    endProductIndex = e.matches ? MOBILE_PRODUCT_COUNT : DESKTOP_PRODUCT_COUNT;
+    if (e.matches) {
+        showMoreBtn.style.display = "block"
+    } else {
+        showMoreBtn.style.display = "none"
+    }
+
+    renderProducts(endProductIndex);
+});
+
+const renderProducts = (endProductIndex) => {
     const productsGrid = document.getElementById('productsGrid');
-    productsGrid.innerHTML = products.map(product => createProductCard(product)).join('');
+    productsGrid.innerHTML = products.slice(0, endProductIndex).map(product => createProductCard(product)).join('');
     addHoverEffect()
 }
 
@@ -181,4 +211,59 @@ const createProductCard = (product) => {
         </article>
     `;
     return productCard
+}
+
+const createCustomScrollbar = () => {
+    const container = document.getElementById('productsGrid');
+    const track = document.getElementById('scrollTrack');
+    const thumb = document.getElementById('scrollThumb');
+
+    let isDragging = false;
+    let startX = 0;
+    let startScrollLeft = 0;
+
+    const updateThumb = () => {
+        const thumbWidth = Math.max((container.clientWidth / container.scrollWidth) * track.offsetWidth, 30);
+        const scrollLeft = container.scrollLeft;
+        const maxScrollLeft = container.scrollWidth - container.clientWidth;
+        const maxThumbLeft = track.offsetWidth - thumbWidth;
+
+        const thumbLeft = maxScrollLeft > 0
+            ? (scrollLeft / maxScrollLeft) * maxThumbLeft
+            : 0;
+
+        thumb.style.width = `${thumbWidth}px`;
+        thumb.style.transform = `translateX(${thumbLeft}px)`;
+    }
+
+    container.addEventListener('scroll', updateThumb);
+    window.addEventListener('resize', updateThumb);
+    setTimeout(updateThumb, 50);
+
+    thumb.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        startX = e.clientX;
+        startScrollLeft = container.scrollLeft;
+
+        const maxScrollLeft = container.scrollWidth - container.clientWidth;
+        const maxThumbLeft = track.offsetWidth - thumb.offsetWidth;
+        const scrollRatio = maxScrollLeft / maxThumbLeft;
+
+        const onMouseMove = (e) => {
+            if (!isDragging) return;
+            const dx = e.clientX - startX;
+            container.scrollLeft = startScrollLeft + dx * scrollRatio;
+        }
+
+        const onMouseUp = () => {
+            isDragging = false;
+            window.removeEventListener('mousemove', onMouseMove);
+            window.removeEventListener('mouseup', onMouseUp);
+            document.body.style.userSelect = '';
+        }
+
+        document.body.style.userSelect = 'none';
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mouseup', onMouseUp);
+    });
 }

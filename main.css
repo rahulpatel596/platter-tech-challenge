@@ -1,5 +1,12 @@
  body {
     font-family: 'Bebas Neue', sans-serif;
-    scroll-behavior: smooth;
  }
- 
+
+ .scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
