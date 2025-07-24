@@ -2,6 +2,9 @@
 # Author: Rahul Patel
 [Preview](https://rahulpatel596.github.io/platter-tech-challenge/)
 
+Shopify Store - https://iq9eqf-xf.myshopify.com/
+Shopify store password - platter123
+
 - Deployed using Github pages as it was a simple prototype with HTML, TailwindCSS, Javascript.
 
 
