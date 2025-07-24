@@ -1,0 +1,556 @@
+{% schema %}
+{
+  "name": "Custom Product Carousel",
+  "tag": "section",
+  "class": "custom-product-carousel",
+  "settings": [
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Section Title",
+      "default": "Best Sellers"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection",
+      "info": "Select the collection to display products from"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Product Carousel",
+      "settings": {
+        "section_title": "Best Sellers",
+        "collection": "frontpage"
+      }
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  body {
+    font-family: 'Bebas Neue', sans-serif;
+    background-color: #ffffff;
+    scroll-behavior: smooth;
+    line-height: 1.625;
+  }
+
+  .sale-badge {
+    font-family: 'Bebas Neue', sans-serif;
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background-color: white;
+    border: 1px solid black;
+    color: black;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    border-radius: 12px;
+    z-index: 10;
+  }
+
+  .discount-badge {
+    font-family: 'Bebas Neue', sans-serif;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background-color: #5C553A;
+    border: 1px solid black;
+    color: white;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    border-radius: 12px;
+    z-index: 10;
+  }
+
+  .custom-product-carousel {
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 32px 8px;
+  }
+
+  .section-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    width: 100%;
+    text-align: center;
+    font-family: 'Source Serif Pro', serif;
+    font-weight: 700;
+    font-size: 28px;
+    color: #000000;
+  }
+
+  .shop-all-btn {
+    display: none;
+  }
+
+  .prod-container-desktop {
+    position: relative;
+    overflow: hidden;
+    display: none;
+  }
+
+  .prod-container-mobile {
+    position: relative;
+    overflow: hidden;
+    display: block;
+  }
+
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scroll-track {
+    position: absolute;
+    bottom: 2px;
+    left: 0;
+    right: 0;
+    display: none;
+    align-items: center;
+    background-color: #e5e7eb;
+    height: 4px;
+  }
+
+  .scroll-thumb {
+    position: absolute;
+    background-color: #000000;
+    border-radius: 9999px;
+    cursor: grab;
+    height: 4px;
+    transition: all 0.2s ease;
+  }
+
+  .scroll-thumb:hover {
+    height: 6px;
+  }
+
+  .scroll-thumb:active {
+    height: 6px;
+  }
+
+  .show-more-btn {
+    font-size: 16px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    padding: 16px;
+    border-radius: 9999px;
+    background-color: #000000;
+    color: #ffffff;
+    width: 100%;
+    border: none;
+    cursor: pointer;
+    display: block;
+  }
+
+  .product-card {
+    cursor: pointer;
+    min-width: 158px;
+  }
+
+  .product-image-container {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .product-image-container img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 12px;
+    transition: opacity 0.2s ease-in-out;
+  }
+
+  .product-image-container .secondary-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .product-image-container:hover .secondary-image {
+    opacity: 1;
+  }
+
+  .product-image-container:hover .primary-image {
+    opacity: 0;
+  }
+
+  .product-image {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 12px;
+  }
+
+  .product-info {
+    color: #000000;
+    padding: 12px 12px 0;
+    display: flex;
+    gap: 8px;
+    flex-direction: column;
+  }
+
+  .product-title {
+    font-size: 16px;
+    font-family: 'Bebas Neue', sans-serif;
+  }
+
+  .product-rating {
+    font-size: 11px;
+    font-family: 'Poppins', sans-serif;
+    color: #707070;
+  }
+
+  .product-price {
+    font-size: 16px;
+    font-weight: 500;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  /* Desktop Styles */
+  @media (min-width: 768px) {
+    .prod-container-desktop {
+      position: relative;
+      overflow: hidden;
+      display: block;
+    }
+
+    .prod-container-mobile {
+      position: relative;
+      overflow: hidden;
+      display: none;
+    }
+
+
+    .section-title {
+      width: auto;
+      text-align: left;
+      font-weight: 900;
+      font-size: 40px;
+    }
+
+    .shop-all-btn {
+      display: flex;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      color: #5C553A;
+      background: none;
+      border: none;
+      cursor: pointer;
+
+    }
+
+    .products-grid {
+      display: flex;
+      overflow-x: scroll;
+      gap: 24px;
+      margin-bottom: 56px;
+    }
+
+    .scroll-track {
+      display: flex;
+    }
+
+    .show-more-btn {
+      display: none;
+    }
+
+    .product-card {
+      min-width: 355px;
+    }
+
+    .product-title {
+      font-size: 18px;
+      font-family: 'Bebas Neue', sans-serif;
+    }
+
+    .product-rating {
+      font-size: 12px;
+    }
+
+    .svg-wrapper {
+      margin-left: 4px;
+    }
+  }
+</style>
+
+<section class="custom-product-carousel">
+  <div class="section-header">
+    <h2 class="section-title">
+      {{ section.settings.section_title }}
+    </h2>
+    <a aria-label="Shop All Best Sellers" class="shop-all-btn" href="{{ section.settings.collection.url }}">
+      Show all best sellers
+      <span class="svg-wrapper">
+        {{- 'icon-arrow.svg' | inline_asset_content -}}
+      </span>
+    </a>
+  </div>
+
+  <div id="products-container-desktop-{{ section.id }}" class="prod-container-desktop">
+    <div class="products-grid scrollbar-hide">
+      {% for product in section.settings.collection.products %}
+        <a href="{{ product.url }}">
+          <article class="product-card">
+            <div class="product-image-container">
+              <div class="product-image-container">
+                <div class="sale-badge">BEST SELLER</div>
+                {% if product.compare_at_price > product.price %}
+                  <div class="discount-badge">
+                    SALE
+                    {{
+                      product.compare_at_price
+                      | minus: product.price
+                      | times: 100.0
+                      | divided_by: product.compare_at_price
+                      | round
+                    -}}
+                    %
+                  </div>
+                {% endif %}
+                <img
+                  width=""
+                  height=""
+                  class="product-image primary-image"
+                  src="{{ product.featured_image | image_url: width: 300 }}"
+                  alt="{{ product.title }}"
+                  loading="lazy"
+                >
+                {% if product.images.size > 1 and product.images[1] %}
+                  <img
+                    width=""
+                    height=""
+                    class="product-image secondary-image"
+                    src="{{ product.images[1] | image_url: width: 300 }}"
+                    alt="{{ product.title }} secondary image"
+                  >
+                {% endif %}
+              </div>
+            </div>
+            <div class="product-info">
+              <div>
+                <h3 class="product-title">{{ product.title }}</h3>
+              </div>
+              <div class="product-rating">
+                <span>1234 Reviews</span>
+              </div>
+              <div>
+                <span class="product-price">
+                  {{ product.price | money }}
+                </span>
+              </div>
+            </div>
+          </article>
+        </a>
+      {% endfor %}
+    </div>
+
+    <div class="scroll-track" id="scrollTrack-{{ section.id }}">
+      <button
+        aria-label="Scrollbar Thumb"
+        type="button"
+        class="scroll-thumb"
+        id="scrollThumb-{{ section.id }}"
+      ></button>
+    </div>
+  </div>
+  <div id="products-container-mobile-{{ section.id }}" class="prod-container-mobile">
+    <div class="products-grid scrollbar-hide">
+      {% for product in section.settings.collection.products %}
+        <a href="{{ product.url }}">
+          <article class="product-card">
+            <div class="product-image-container">
+              <div class="product-image-container">
+                <div class="sale-badge">BEST SELLER</div>
+                {% if product.compare_at_price > product.price %}
+                  <div class="discount-badge">
+                    SALE
+                    {{
+                      product.compare_at_price
+                      | minus: product.price
+                      | times: 100.0
+                      | divided_by: product.compare_at_price
+                      | round
+                    -}}
+                    %
+                  </div>
+                {% endif %}
+
+                <img
+                  width=""
+                  height=""
+                  class="product-image primary-image"
+                  src="{{ product.featured_image | image_url: width: 300 }}"
+                  alt="{{ product.title }}"
+                  loading="lazy"
+                >
+                {% if product.images.size > 1 and product.images[1] %}
+                  <img
+                    width=""
+                    height=""
+                    class="product-image secondary-image"
+                    src="{{ product.images[1] | image_url: width: 300 }}"
+                    alt="{{ product.title }} secondary image"
+                  >
+                {% endif %}
+              </div>
+            </div>
+            <div class="product-info">
+              <div>
+                <h3 class="product-title">{{ product.title }}</h3>
+              </div>
+              <div class="product-rating">
+                <span class="text-gray">1234 Reviews</span>
+              </div>
+              <div>
+                <span class="product-price">
+                  {{ product.price | money }}
+                </span>
+              </div>
+            </div>
+          </article>
+        </a>
+      {% endfor %}
+    </div>
+
+    <button aria-label="Show More button" id="showMoreBtn-{{ section.id }}" class="show-more-btn">Show More</button>
+  </div>
+</section>
+
+<script>
+  (function () {
+    const MOBILE_LIMIT = 4;
+    const DESKTOP_LIMIT = 10;
+    const isMobile = window.matchMedia("(max-width: 768px)");
+    const sectionId = "{{ section.id }}"
+    const getEl = (id) => document.getElementById(id);
+    const productGridMobile = document.querySelector(`#products-container-mobile-${sectionId} .products-grid`);
+    const productGridDesktop = document.querySelector(`#products-container-desktop-${sectionId} .products-grid`);
+    
+    const showMoreBtn = getEl(`showMoreBtn-${sectionId}`);
+    const scrollTrack = getEl(`scrollTrack-${sectionId}`);
+    const scrollThumb = getEl(`scrollThumb-${sectionId}`);
+    let allMobileCards = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      allMobileCards = Array.from(productGridMobile?.children || []);
+      setupMobileView();
+      setupScrollbar();
+    });
+
+    isMobile.addEventListener('change', () => {
+      if (isMobile.matches) {
+        setupMobileView();
+      } else {
+        showMoreBtn?.style.setProperty('display', 'none');
+        revealCards(productGridMobile, DESKTOP_LIMIT);
+      }
+    });
+
+    const setupMobileView = () => {
+      if (!productGridMobile || !showMoreBtn) return;
+
+      hideCards(productGridMobile, MOBILE_LIMIT);
+      if (allMobileCards.length > MOBILE_LIMIT) {
+        showMoreBtn.style.display = 'block';
+      }
+
+      showMoreBtn.addEventListener('click', () => {
+        revealCards(productGridMobile, DESKTOP_LIMIT);
+        showMoreBtn.style.display = 'none';
+      });
+    }
+
+    const hideCards = (grid, limit) => {
+      Array.from(grid.children).forEach((card, i) => {
+        card.style.display = i < limit ? 'block' : 'none';
+      });
+    }
+
+    const revealCards = (grid, limit) => {
+      Array.from(grid.children).forEach((card, i) => {
+        if (i < limit) card.style.display = 'block';
+      });
+    }
+
+    const setupScrollbar = () => {
+      if (!productGridDesktop || !scrollTrack || !scrollThumb) return;
+
+      const container = productGridDesktop;
+      const track = scrollTrack;
+      const thumb = scrollThumb;
+      let isDragging = false;
+      let startX = 0;
+      let startScrollLeft = 0;
+
+      const updateThumb = () => {
+        const thumbWidth = Math.max((container.clientWidth / container.scrollWidth) * track.offsetWidth, 30);
+        const scrollLeft = container.scrollLeft;
+        const maxScrollLeft = container.scrollWidth - container.clientWidth;
+        const maxThumbLeft = track.offsetWidth - thumbWidth;
+
+        const thumbLeft = maxScrollLeft > 0 ? (scrollLeft / maxScrollLeft) * maxThumbLeft : 0;
+        thumb.style.width = `${thumbWidth}px`;
+        thumb.style.transform = `translateX(${thumbLeft}px)`;
+      }
+
+      container.addEventListener('scroll', updateThumb);
+      window.addEventListener('resize', updateThumb);
+      setTimeout(updateThumb, 50);
+
+      thumb.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        startX = e.clientX;
+        startScrollLeft = container.scrollLeft;
+
+        const maxScrollLeft = container.scrollWidth - container.clientWidth;
+        const maxThumbLeft = track.offsetWidth - thumb.offsetWidth;
+        const scrollRatio = maxScrollLeft / maxThumbLeft;
+
+        const onMouseMove = (e) => {
+          if (!isDragging) return;
+          const dx = e.clientX - startX;
+          container.scrollLeft = startScrollLeft + dx * scrollRatio;
+        };
+
+        const onMouseUp = () => {
+          isDragging = false;
+          window.removeEventListener('mousemove', onMouseMove);
+          window.removeEventListener('mouseup', onMouseUp);
+          document.body.style.userSelect = '';
+        };
+
+        document.body.style.userSelect = 'none';
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mouseup', onMouseUp);
+      });
+    }
+  })();
+</script>
