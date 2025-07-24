@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Platter challenge</title>
+      <link href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:wght@400;600;700&family=Bebas+Neue&family=Poppins&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="./main.css" rel="stylesheet">
+    <script defer src="main.js"></script>
+</head>
+
+<body class="bg-white text-body leading-relaxed">
+    <header>
+
+    </header>
+    <main>
+        <section class="w-full max-w-screen-xl mx-auto px-6 py-8">
+            <div class="w-full flex items-center justify-between flex-wrap gap-4 mb-4 md:mb-8">
+                <h2
+                    class="md:w-fit w-full text-center font-[Source_Serif_Pro] font-bold md:font-black text-[1.75rem] md:text-[2.5rem]">
+                    Best Sellers</h2>
+                <button aria-label="Shop All Best Sellers"
+                    class="font-[Poppins] font-semibold text-sm text-[#5C553A] hidden md:block">
+                    Shop All Best Sellers
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+            <div class="relative">
+                <div id="productsGrid"
+                    class="grid grid-cols-2 md:flex overflow-x-scroll scrollbar-hide md:gap-6 gap-4 mb-4 md:mb-14">
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer>
+
+    </footer>
+</body>
