@@ -1,6 +1,6 @@
 # Platter Technical Challenge
 # Author: Rahul Patel
-[Preview](rahulpatel596.github.io/platter-tech-challenge/)
+[Preview](https://rahulpatel596.github.io/platter-tech-challenge/)
 
 - Deployed using Github pages as it was a simple prototype with HTML, TailwindCSS, Javascript.
 
